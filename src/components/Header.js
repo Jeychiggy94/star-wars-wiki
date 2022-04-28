@@ -1,4 +1,4 @@
-import { Box, Image, Stack } from '@chakra-ui/react'
+import { Box, Stack } from '@chakra-ui/react'
 
 
 
