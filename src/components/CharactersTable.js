@@ -8,12 +8,12 @@ import {
     Tr,
     Th,
     Td,
-    TableCaption,
     TableContainer,
     Spinner
 } from '@chakra-ui/react'
+import * as Styles from './Styles'
 
-const CharactersTable = ({characters, fetching}) => {
+const CharactersTable = ({characters, fetching, gender, onClick}) => {
 
     const width = window.innerWidth
 
@@ -21,18 +21,22 @@ const CharactersTable = ({characters, fetching}) => {
         return Number(result) + Number(element.height !== 'unknown' ? element.height : 0)
     }, 0)
 
+    let height = totalHeight / 2.54
+    let heightInFt = Math.floor(height / 12)
+    let heightInInches = (height - 12 * heightInFt).toFixed(2)
+
     return (
-        <TableContainer>
+        <TableContainer bg='black'>
             <Table variant='simple'>
                 <Thead>
                     <Tr>
-                        <Th>Name</Th>
-                        <Th>Gender</Th>
-                        <Th isNumeric>Height</Th>
+                        <Th color='yellow' onClick={onClick}>Name</Th>
+                        <Th  color='yellow'>Gender</Th>
+                        <Th isNumeric color='yellow'>Height</Th>
                     </Tr>
                 </Thead>
                 {fetching && (
-                   <Center w={width}>
+                   <Center w={width} height='300px'>
                        <Spinner
                            align='center'
                            thickness='4px'
@@ -40,7 +44,7 @@ const CharactersTable = ({characters, fetching}) => {
                            emptyColor='gray.200'
                            color='yellow'
                            size='xl'
-                           style={{marginTop: 100}}
+                           style={Styles.spinner}
                        />
                    </Center>
                 )}
@@ -49,9 +53,9 @@ const CharactersTable = ({characters, fetching}) => {
                         characters.map((character, index) =>
                             (
                                 <Tr key={index}>
-                                    <Td>{character.name}</Td>
-                                    <Td>{character.gender}</Td>
-                                    <Td isNumeric>{character.height}</Td>
+                                    <Td color='yellow'>{character.name}</Td>
+                                    <Td color='yellow'>{character.gender}</Td>
+                                    <Td isNumeric color='yellow'>{character.height}</Td>
                                 </Tr>
                             )
                         )
@@ -59,8 +63,8 @@ const CharactersTable = ({characters, fetching}) => {
                 </Tbody>
                 <Tfoot>
                     <Tr>
-                        <Th>Total Characters in movie: {fetching ? "Calculating..." : characters.length}</Th>
-                        <Th isNumeric>Total height of characters: {fetching ? "Calculating..." : totalHeight}</Th>
+                        <Th color='white'>{gender ? gender : ''} Characters in movie: {fetching ? "Calculating..." : characters.length}</Th>
+                        <Th isNumeric color='white'>Total height of characters: {totalHeight}cm ({heightInFt} ft / {heightInInches} in)</Th>
                     </Tr>
                 </Tfoot>
             </Table>

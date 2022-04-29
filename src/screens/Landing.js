@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import {connect} from "react-redux"
 import { useNavigate } from 'react-router-dom'
 
@@ -15,11 +15,12 @@ import {
 } from '@chakra-ui/react'
 import Header from '../components/Header'
 import MovieListItem from "../components/MovieListItem";
-import {ContainerActions,NetworkActions} from '../state/'
+import {ContainerActions,NetworkActions, GeneralActions} from '../state/'
+import * as Styles from './ScreenStyles'
 
 import starWarsLogo from '../assets/starWarsLogo.png'
 
-const Landing = ({getMovies, getMovieRequest, getMoviesRequest, moviesUpdate, movies}) => {
+const Landing = ({getMovies, getMovieRequest, getMoviesRequest, moviesUpdate, movies, errorShow}) => {
 
     const navigate = useNavigate()
 
@@ -29,20 +30,27 @@ const Landing = ({getMovies, getMovieRequest, getMoviesRequest, moviesUpdate, mo
             moviesUpdate({movies: response?.results})
         }
         catch(e) {
-
+            errorShow({
+                errorTitle: 'Something went wrong' || e.messageTitle,
+                errorBody: 'Error retrieving the selected movie' || e.messageBody
+            })
         }
     }
 
     const getMovie = async ({id}) => {
         try {
             const response = await getMovieRequest({id: id})
-            console.log(response.characters)
+
             moviesUpdate({
                 selectedMovie: response,
                 characters: response?.characters
             })
         }
         catch(e) {
+            errorShow({
+                errorTitle: 'Something went wrong' || e.messageTitle,
+                errorBody: 'Error retrieving movies' || e.messageBody
+            })
         }
     }
 
@@ -51,25 +59,27 @@ const Landing = ({getMovies, getMovieRequest, getMoviesRequest, moviesUpdate, mo
     })
 
     return (
-        <VStack alignItems='center'>
+        <VStack alignItems='center' height='100%'>
             <Header title='Star Wars Wiki'/>
             <Image src={starWarsLogo} width={300} height={200} borderRadius={100} style={{marginBottom: 32}}/>
             <Accordion allowToggle width='60%' onClick={async () => await getMoviesList()}>
                 <AccordionItem
+                    bg='black'
                     border="0px"
                     borderRadius="8px"
                     boxShadow="0px 4px 14px rgba(0, 0, 0, 0.1)"
                 >
                     <h2>
                         <AccordionButton
+                            bg='black'
                             _expanded={{ borderColor: 'unset !important' }}
                             _hover="#FFFFFF"
                             boxShadow="unset !important"
                         >
-                            <Box flex='1' textAlign='left'>
+                            <Box flex='1' textAlign='left' textColor='yellow' bg='black'>
                                 Pick a movie
                             </Box>
-                            <AccordionIcon />
+                            <AccordionIcon color='white'/>
                         </AccordionButton>
                     </h2>
                     <AccordionPanel>
@@ -82,7 +92,7 @@ const Landing = ({getMovies, getMovieRequest, getMoviesRequest, moviesUpdate, mo
                                     emptyColor='gray.200'
                                     color='yellow'
                                     size='xl'
-                                    style={{marginLeft: 300, marginTop: 100}}
+                                    style={Styles.moviesSpinner}
                                 /> :
                                 sortedMovies?.map((movie, index) => {
                                     return (
@@ -113,6 +123,7 @@ const mapStateToProps = (state) =>  ({
 
 
 const mapDispatchToProps = (dispatch) => ({
+    errorShow: (payload) => dispatch(GeneralActions.errorShow(payload)),
     getMovieRequest: (payload) => dispatch(NetworkActions.getMovieRequest(payload)),
     getMoviesRequest: (payload) => dispatch(NetworkActions.getMoviesRequest(payload)),
     moviesUpdate: (payload) => dispatch(ContainerActions.moviesUpdate(payload))
