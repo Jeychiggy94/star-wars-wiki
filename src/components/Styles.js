@@ -1,5 +1,5 @@
 export const spinner = {
-    marginTop: 100
+    marginTop: 50
 }
 
 export const movieCrawl = {
